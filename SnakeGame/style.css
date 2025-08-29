@@ -1,0 +1,601 @@
+/* Base Styles and Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #00ff00;
+    --primary-dark: #00aa00;
+    --secondary-color: #ff3333;
+    --accent-color: #ffaa00;
+    --bg-color: #121212;
+    --bg-light: #1a1a1a;
+    --text-color: #ffffff;
+    --grid-size: 20px;
+    --border-color: #333333;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--bg-color);
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+/* Game Container and Layout */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+}
+
+/* Header and Score Display */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    z-index: 10;
+}
+
+.score-container {
+    display: flex;
+    justify-content: space-between;
+    width: 300px;
+    padding: 15px 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.score, .high-score {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Game Board Styling */
+.game-board {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-light);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Grid pattern for game board */
+.game-board::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+    z-index: 0;
+}
+
+/* Enhanced Snake Styling */
+.snake-segment {
+    width: var(--grid-size);
+    height: var(--grid-size);
+    position: absolute;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+    transition: box-shadow 0.3s ease;
+}
+
+.snake-head {
+    width: calc(var(--grid-size) + 2px);
+    height: calc(var(--grid-size) + 2px);
+    background-color: var(--primary-dark);
+    position: absolute;
+    border-radius: 12px;
+    z-index: 2;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+}
+
+/* Direction-specific head styling */
+.snake-head.right {
+    border-radius: 50% 70% 70% 50%;
+}
+.snake-head.left {
+    border-radius: 70% 50% 50% 70%;
+}
+.snake-head.up {
+    border-radius: 50% 50% 70% 70%;
+}
+.snake-head.down {
+    border-radius: 70% 70% 50% 50%;
+}
+
+/* Snake eyes */
+.snake-eye {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    z-index: 3;
+    box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+/* Snake connecting elements for smoother appearance */
+.snake-connector {
+    position: absolute;
+    background-color: #00dd00;
+    z-index: 1;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+}
+
+/* Food Styling */
+.food {
+    width: var(--grid-size);
+    height: var(--grid-size);
+    background-color: var(--secondary-color);
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255, 51, 51, 0.8);
+    transform-origin: center;
+    animation: pulse 1s infinite alternate;
+}
+
+.special-food {
+    width: var(--grid-size);
+    height: var(--grid-size);
+    background-color: var(--accent-color);
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 170, 0, 0.8);
+    animation: pulse-special 0.8s infinite alternate;
+    z-index: 2;
+}
+
+/* Obstacles */
+.obstacle {
+    background-color: #888;
+    position: absolute;
+    border-radius: 5px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 5px rgba(136, 136, 136, 0.5);
+}
+
+/* Animations */
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+@keyframes pulse-special {
+    from { transform: scale(1); box-shadow: 0 0 12px rgba(255, 170, 0, 0.8); }
+    to { transform: scale(1.2); box-shadow: 0 0 25px rgba(255, 170, 0, 0.9); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes gameOverPulse {
+    from { text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+    to { text-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+}
+
+/* Game Screens and UI */
+.screen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.4s ease;
+}
+
+.title {
+    font-size: 72px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+    letter-spacing: 4px;
+}
+
+.game-over .title {
+    color: var(--secondary-color);
+    text-shadow: 0 0 20px rgba(255, 51, 51, 0.7);
+    animation: gameOverPulse 1s infinite alternate;
+}
+
+.message {
+    font-size: 28px;
+    color: white;
+    margin-bottom: 30px;
+    text-align: center;
+    line-height: 1.4;
+    max-width: 80%;
+}
+
+.instructions {
+    font-size: 16px;
+    color: #cccccc;
+    margin: 10px 0 30px;
+    text-align: center;
+    max-width: 600px;
+    line-height: 1.6;
+    padding: 0 20px;
+}
+
+/* Controls Info Display */
+.controls-info {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    max-width: 80%;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    width: 120px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.control-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.control-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.control-text {
+    font-size: 14px;
+    color: #aaaaaa;
+}
+
+/* Difficulty Selection */
+.difficulty-selector {
+    margin-bottom: 30px;
+}
+
+.difficulty-heading {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #dddddd;
+    font-size: 20px;
+}
+
+.difficulty-btn {
+    padding: 12px 24px;
+    margin: 0 10px;
+    background-color: #333;
+    border: 2px solid #555;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 18px;
+    transition: all 0.2s ease;
+}
+
+.difficulty-btn:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.difficulty-btn.selected {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Buttons */
+.btn {
+    padding: 15px 30px;
+    background-color: var(--primary-dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 22px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+}
+
+.btn:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 0, 0.4);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+/* Game State Indicators */
+.paused-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 25px 50px;
+    font-size: 36px;
+    display: none;
+    z-index: 5;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 2px;
+    animation: fadeIn 0.3s ease;
+}
+
+.home-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 100;
+    display: none;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(3px);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.home-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+/* Game Over Stats */
+.stats-container {
+    margin: 20px 0 30px;
+    padding: 20px 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    min-width: 250px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 20px;
+}
+
+.stats-label {
+    color: #aaaaaa;
+}
+
+.stats-value {
+    font-weight: bold;
+    color: white;
+}
+
+.final-score {
+    color: var(--primary-color);
+    font-size: 32px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Mobile-friendly controls */
+.mobile-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 180px;
+    z-index: 10;
+}
+
+.mobile-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.direction-btn {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(3px);
+}
+
+.direction-btn:active {
+    background-color: rgba(0, 255, 0, 0.3);
+    transform: scale(0.95);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .title {
+        font-size: 54px;
+    }
+    
+    .message {
+        font-size: 22px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        font-size: 18px;
+    }
+    
+    .difficulty-btn {
+        padding: 10px 18px;
+        font-size: 16px;
+        margin: 0 5px;
+    }
+    
+    .control-group {
+        width: 100px;
+        padding: 10px;
+    }
+    
+    .home-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    
+    .mobile-controls {
+        display: flex;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .title {
+        font-size: 42px;
+    }
+    
+    .message {
+        font-size: 18px;
+    }
+    
+    .button-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .stats-container {
+        min-width: 200px;
+        padding: 15px;
+    }
+    
+    .controls-info {
+        gap: 10px;
+    }
+    
+    .control-group {
+        width: 90px;
+        padding: 8px;
+    }
+    
+    .score-container {
+        width: 250px;
+        padding: 10px 15px;
+    }
+    
+    .score, .high-score {
+        font-size: 1.2rem;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion) {
+    .food, .special-food {
+        animation: none;
+    }
+    
+    .btn:hover, .difficulty-btn:hover, .control-group:hover {
+        transform: none;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-color: #f0f0f0;
+        --bg-light: #ffffff;
+        --text-color: #121212;
+        --border-color: #cccccc;
+    }
+    
+    .screen-overlay {
+        background-color: rgba(255, 255, 255, 0.85);
+    }
+    
+    .message, .instructions {
+        color: #333333;
+    }
+    
+    .control-group {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-container {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-label {
+        color: #555555;
+    }
+}
